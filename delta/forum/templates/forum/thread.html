@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container">
+    <br>
+    <!-- OP -->
+    <div class="border rounded border-secondary p-3 bg-dark">
+        <div class="media">
+            <div class="align-self-start mr-3 pr-3 d-block border-right border-secondary">
+                <img class="" src="{% static 'img/delta.png' %}" width=128 height=128>
+                <div class="text-center">
+                    <h5 class="pt-2 text-primary">admin</h5>
+                    <div class="">
+                        <span class="badge badge-primary">Site Adminstrator</span><br>
+                        <span class="badge badge-light">God</span><br>
+                    </div>
+                    <div class="">
+                        <small>Posts: <span class="text-light">1000</span></small><br>
+                        <small>Reputation: <span class="text-light">9001</span></small><br>
+                    </div>
+                </div>
+            </div>
+            <div class="media-body">
+                <h1 class="mt-0">Thread title</h1>
+                <p>Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras
+                    purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi
+                    vulputate fringilla. Donec lacinia congue felis in faucibus.</p>
+                <p>Donec sed odio dui. Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque
+                    penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
+            </div>
+        </div>
+    </div>
+    <!-- Reply -->
+    <div class="border-right border-left border-bottom rounded border-secondary p-3 col-11 float-right">
+        <div class="media">
+            <div class="align-self-start mr-3 pr-3 d-block border-right border-secondary">
+                <img class="" src="{% static 'img/delta.png' %}" width=128 height=128>
+                <div class="text-center">
+                    <h5 class="pt-2 text-secondary">Average Human</h5>
+                    <div class="">
+                        <span class="badge badge-secondary">User</span><br>
+                    </div>
+                    <div class="">
+                        <small>Posts: <span class="text-light">20</span></small><br>
+                        <small>Reputation: <span class="text-light">24</span></small><br>
+                    </div>
+                </div>
+            </div>
+            <div class="media-body">
+                <p>Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras
+                    purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi
+                    vulputate fringilla. Donec lacinia congue felis in faucibus.</p>
+                <p>Donec sed odio dui. Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque
+                    penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
