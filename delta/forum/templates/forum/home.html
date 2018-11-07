@@ -4,6 +4,7 @@
 
 <div class="container mt-5">
     {% if subforum %}
+    <!-- Home page w/ subforums -->
     <div class="container bg-dark py-2 rounded ">
         <h1 class="text-primary mb-0">{{ subforum.name }}</h1>
         <p class="mb-0">{{ subforum.description }}</p>
@@ -18,7 +19,9 @@
         </a>
         {% endfor %}
     </ul>
+
     {% else %}
+    <!-- Subforum page -->
 
     <div class="container bg-dark py-2 rounded ">
         <h1 class="text-primary mb-0">Delta.Forum</h1>
