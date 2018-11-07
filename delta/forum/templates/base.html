@@ -36,12 +36,17 @@
     </main>
 
     {% include 'footer.html' %}
-    
-    {% for key, error in errors.items %}
-    <div class="alert alert-{{ error.type }}">
-        {{ error.content }}
+
+    <div style="position:fixed; bottom: 15px; right: 25px">
+        {% for key, error in errors.items %}
+        <div class="alert alert-{{ error.type }}">
+            {{ error.content }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span style="white-space: pre" class="text-light" aria-hidden="true">  &times;</span>
+            </button>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </body>
 
 </html>

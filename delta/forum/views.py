@@ -85,7 +85,7 @@ def add_error(request, error_type):
         if error_type == 'NoThreadFound':
             request.session['errors']['NoThreadFoundError'] = {
                 'type': 'warning',
-                'content': '<strong>Error.</strong> Thread not found'
+                'content': 'Error: Thread not found.'
             }
     except KeyError:
         request.session['errors'] = {}
@@ -103,7 +103,7 @@ def load_errors_context(request, context):
                     'content': error['content']
                 }
             })
-            request.session['errors'].pop(key, None)
+        request.session['errors'] = {}
     except KeyError:
         return
 
