@@ -39,11 +39,26 @@ def home(request):
             'id': request.session.get('user_id')
         }
         # Get subforum request
-        sub = request.POST.get('sub')
-        subforum = Subforum.objects.get(id=1)
-        if subforum is not None:
-            print(subforum.name)
-        return render(request, 'forum/home.html', context)
+        sub = request.GET.get('sub')
+        if sub:
+            try: 
+                subforum = Subforum.objects.get(id=sub) 
+                context['subforum'] = subforum.__dict__
+                threads = subforum.thread_set.all()
+                context['threads'] = threads
+                print(context['threads'])
+                return render(request, 'forum/home.html', context)
+            except ObjectDoesNotExist:
+                return redirect('forum-home')
+        else:
+            context['subforums'] = {}
+            for subforum in Subforum.objects.all():
+                try:
+                    context['subforums'][subforum.category][subforum.id] = subforum.__dict__
+                except KeyError:
+                    context['subforums'][subforum.category] = {}
+                    context['subforums'][subforum.category][subforum.id] = subforum.__dict__
+            return render(request, 'forum/home.html', context)
 
 def thread(request):
     if check_login(request) is False: 

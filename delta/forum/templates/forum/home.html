@@ -1,11 +1,48 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 
 {% block content %}
 
-<div class="container">
+<div class="container mt-5">
+    {% if subforum %}
+    <div class="container bg-dark py-2 rounded ">
+        <h1 class="text-primary mb-0">{{ subforum.name }}</h1>
+        <p class="mb-0">{{ subforum.description }}</p>
+    </div>
 
+    <h2 class="mt-4">Recent Threads</h2>
+    <ul class="list-group border-secondary">
+        {% for thread in threads %}
+        <a class="list-group-item list-group-item-action border-secondary p-2  pl-5"  href="{% url 'forum-thread' %}?id={{ thread.id }}">
+            <h4 class="text-info mb-0">{{ thread.title }}</h4>
+            <small>By {{ thread.author }} on {{ thread.date }}</small>
+        </a>
+        {% endfor %}
+    </ul>
+    {% else %}
 
-    
+    <div class="container bg-dark py-2 rounded ">
+        <h1 class="text-primary mb-0">Delta.Forum</h1>
+        <p class="mb-0"></p>
+    </div>
+
+    {% for category, subforum in subforums.items %}
+    <h2 class="mt-4">Subforums</h2>
+    <ul class="list-group border-secondary">
+        <li class="list-group-item border-secondary p-2 bg-dark">
+            <h3>{{ category }}</h3>
+        </li>
+        {% for i, attributes in subforum.items %}
+        <a class="list-group-item list-group-item-action border-secondary p-2 pl-5" href="{% url 'forum-home' %}?sub={{ attributes.id }}">
+            <!-- <a href="{% url 'forum-home' %}?sub={{ attributes.id }}"> -->
+                <h4 class="text-info mb-0">{{ attributes.name }}</h4>
+                <small>{{ attributes.description }}</small>
+            <!-- </a> -->
+        </a>
+        {% endfor %}
+    </ul>
+    {% endfor %}
+
+    {% endif %}
 </div>
 
 {% endblock %}
