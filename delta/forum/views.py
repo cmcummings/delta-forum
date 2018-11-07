@@ -29,6 +29,9 @@ def logout_view(request):
 
 def home(request):
     context = {}
+    # Load error messages
+    load_errors_context(request, context)
+
     if check_login(request) is False: 
         context['login'] = LoginForm()
         return render(request, 'forum/splash.html', context)
@@ -43,10 +46,10 @@ def thread(request):
     if check_login(request) is False: 
         return redirect('forum-home')
 
-    
-
     # Init thread context as blank dictionary
     context = {}
+    # Load error messages
+    load_errors_context(request, context)
     # Get Thread from GET request
     thread_id = request.GET.get("id")
     # Check if user actually requested a specific thread 
@@ -67,10 +70,7 @@ def thread(request):
         for reply in thread.reply_set.all():
             context['thread']['replies'][reply.id]['author'] =  User.objects.get(id=context['thread']['replies'][reply.id]['author_id']).__dict__
     except ObjectDoesNotExist: 
-        request.session['NoThreadFoundError'] = {
-            'type': 'warning',
-            'content': 'Thread not found.'
-        }
+        add_error(request, 'NoThreadFound')
         return redirect('forum-home') # TODO redirect to home page with NoThreadFound error msg
 
     # Get session stuff
@@ -80,8 +80,30 @@ def thread(request):
         
     return render(request, 'forum/thread.html', context)
 
-def add_error(request, type):
-    if request.session['errors'] is None:
+def add_error(request, error_type):
+    try:
+        if error_type == 'NoThreadFound':
+            request.session['errors']['NoThreadFoundError'] = {
+                'type': 'warning',
+                'content': '<strong>Error.</strong> Thread not found'
+            }
+    except KeyError:
         request.session['errors'] = {}
-    if type == 'NoThreadFound':
-        request.session['errors']
+        add_error(request, error_type)
+
+
+def load_errors_context(request, context):
+    context['errors'] = {}
+    try:
+        print(request.session['errors'])
+        for key, error in request.session['errors'].items():
+            context['errors'].update({
+                key: {
+                    'type': error['type'],
+                    'content': error['content']
+                }
+            })
+            request.session['errors'].pop(key, None)
+    except KeyError:
+        return
+
