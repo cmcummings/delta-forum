@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, logout
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
-from .models import Thread, Reply
+from .models import Thread, Reply, Subforum
 from .forms import LoginForm
 
 def check_login(request):
@@ -17,11 +17,9 @@ def login(request):
         password = request.POST.get('password')
         user = authenticate(username=username, password=password)
         if user is not None:
-            print("Logged in as " + username)
             request.session['user_id'] = user.id
         else:
-            print('Login failed')
-        return redirect('forum-home')
+            return redirect('forum-home')
 
 def logout_view(request):
     logout(request)
@@ -40,6 +38,11 @@ def home(request):
         context['user'] = {
             'id': request.session.get('user_id')
         }
+        # Get subforum request
+        sub = request.POST.get('sub')
+        subforum = Subforum.objects.get(id=1)
+        if subforum is not None:
+            print(subforum.name)
         return render(request, 'forum/home.html', context)
 
 def thread(request):
@@ -95,7 +98,6 @@ def add_error(request, error_type):
 def load_errors_context(request, context):
     context['errors'] = {}
     try:
-        print(request.session['errors'])
         for key, error in request.session['errors'].items():
             context['errors'].update({
                 key: {
