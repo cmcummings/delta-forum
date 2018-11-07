@@ -1,33 +1,60 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, logout
+from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
 from .models import Thread, Reply
+from .forms import LoginForm
 
 def check_login(request):
     if request.session.get('user_id') is not None:
         return True
-    print("Redirecting")
     return False
 
+def login(request):
+    if request.POST:
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            print("Logged in as " + username)
+            request.session['user_id'] = user.id
+        else:
+            print('Login failed')
+        return redirect('forum-home')
+
+def logout_view(request):
+    logout(request)
+    return redirect('forum-home')
+
 def home(request):
+    context = {}
     if check_login(request) is False: 
-        return render(request, 'forum/splash.html')
+        context['login'] = LoginForm()
+        return render(request, 'forum/splash.html', context)
     else:
-        return render(request, 'forum/home.html')
+        # Get session stuff
+        context['user'] = {
+            'id': request.session.get('user_id')
+        }
+        return render(request, 'forum/home.html', context)
 
 def thread(request):
     if check_login(request) is False: 
         return redirect('forum-home')
 
-    # Init context as blank dictionary
+    
+
+    # Init thread context as blank dictionary
     context = {}
     # Get Thread from GET request
     thread_id = request.GET.get("id")
     # Check if user actually requested a specific thread 
     if thread_id == None:
-        return render(request, 'forum/thread.html') # TODO redirect to home page
-    thread = Thread.objects.get(id=thread_id)
+        return redirect('forum-home')
     # Check if thread requested exists
-    if thread:
+    try:
+        thread = Thread.objects.get(id=thread_id)
         # Load thread into context if it exists
         context['thread'] = thread.__dict__
         # Load author into context 
@@ -39,7 +66,22 @@ def thread(request):
         # Load author into replies
         for reply in thread.reply_set.all():
             context['thread']['replies'][reply.id]['author'] =  User.objects.get(id=context['thread']['replies'][reply.id]['author_id']).__dict__
-    else: 
-        return render(request, 'forum/thread.html') # TODO redirect to home page with NoThreadFound error msg
+    except ObjectDoesNotExist: 
+        request.session['NoThreadFoundError'] = {
+            'type': 'warning',
+            'content': 'Thread not found.'
+        }
+        return redirect('forum-home') # TODO redirect to home page with NoThreadFound error msg
+
+    # Get session stuff
+    context['user'] = {
+        'id': request.session.get('user_id')
+    }
         
     return render(request, 'forum/thread.html', context)
+
+def add_error(request, type):
+    if request.session['errors'] is None:
+        request.session['errors'] = {}
+    if type == 'NoThreadFound':
+        request.session['errors']

@@ -28,7 +28,7 @@
 </style>
 
 <body>
-    <img src="{% static 'img/frontierspace.jpeg' %}" style="width: 100%; height:100%; position: absolute; z-index: -1"> 
+    <img src="{% static 'img/frontierspace.jpeg' %}" style="width: 100%; height:100%; position: absolute; z-index: -1">
     <div class="container bg-dark p-0 rounded position-absolute" style="width: 30%; height:50%; margin: auto; position: absolute; left: 0; top: 0; bottom: 0; right: 0;">
         <ul class="nav nav-tabs">
             <li class="nav-item">
@@ -44,6 +44,18 @@
             </div>
             <div class="tab-pane fade" id="login">
                 <!-- TODO login form -->
+                <form action="{% url 'forum-login' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="login-username">Username</label>
+                        {{ login.username }}
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        {{ login.password }}
+                    </div>
+                    <input class="float-right" type="submit" value="Log in">
+                </form>
             </div>
         </div>
     </div>

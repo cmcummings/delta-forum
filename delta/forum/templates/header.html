@@ -7,8 +7,15 @@
             </li>
         </ul>
         <div>
+            {% if user.id %}
+            <form action="{% url 'forum-logout' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-primary">Log out</button>
+            </form>
+            {% else %}
             <button type="button" class="btn btn-outline-primary">Login</button>
             <button type="button" class="btn btn-primary">Signup</button>
+            {% endif %}
         </div>
     </nav>
 </header>
