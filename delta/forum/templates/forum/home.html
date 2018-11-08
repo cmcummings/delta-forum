@@ -13,12 +13,37 @@
     <h2 class="mt-4">Recent Threads</h2>
     <ul class="list-group border-secondary">
         {% for thread in threads %}
-        <a class="list-group-item list-group-item-action border-secondary p-2  pl-5"  href="{% url 'forum-thread' %}?id={{ thread.id }}">
+        <a class="list-group-item list-group-item-action border-secondary p-2  pl-5" href="{% url 'forum-thread' %}?id={{ thread.id }}">
             <h4 class="text-info mb-0">{{ thread.title }}</h4>
             <small>By {{ thread.author }} on {{ thread.date }}</small>
         </a>
         {% endfor %}
     </ul>
+
+    <!-- New Thread Form -->
+    <div class="bg-dark rounded m-5 p-3">
+        <form action="{% url 'forum-new-thread' %}?sub={{ subforum.id }}" method="POST">
+            {% csrf_token %}
+            <h2 class="border-bottom border-success text-success">New thread</h2>
+            <div class="form-group">
+                {{ threadform.title }}
+            </div>
+            <div class="form-group">
+                {{ threadform.content }}
+            </div>
+            <input style="" class="btn btn-success" type="submit" value="Post">
+        </form>
+        <script>
+            $("#id_title").attr("placeholder", "Title");
+            $("#id_content").attr("placeholder", "Content");
+            $('.form-group input').each(function() {
+                $(this).addClass('form-control bg-dark text-secondary border-secondary');
+            })
+            $('textarea').each(function() {
+                $(this).addClass('form-control bg-dark text-secondary border-secondary');
+            })
+        </script>
+    </div>
 
     {% else %}
     <!-- Subforum page -->
@@ -37,8 +62,8 @@
         {% for i, attributes in subforum.items %}
         <a class="list-group-item list-group-item-action border-secondary p-2 pl-5" href="{% url 'forum-home' %}?sub={{ attributes.id }}">
             <!-- <a href="{% url 'forum-home' %}?sub={{ attributes.id }}"> -->
-                <h4 class="text-info mb-0">{{ attributes.name }}</h4>
-                <small>{{ attributes.description }}</small>
+            <h4 class="text-info mb-0">{{ attributes.name }}</h4>
+            <small>{{ attributes.description }}</small>
             <!-- </a> -->
         </a>
         {% endfor %}

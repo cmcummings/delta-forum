@@ -8,4 +8,5 @@ urlpatterns = [
     path('thread/', views.thread, name="forum-thread"),
     path('login/', views.login, name="forum-login"),
     path('logout/', views.logout_view, name="forum-logout"),
+    path('newthread/', views.new_thread, name="forum-new-thread")
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

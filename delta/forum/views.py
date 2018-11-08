@@ -2,14 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, logout
 from django.contrib import messages
+from django.http import HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from .models import Thread, Reply, Subforum
-from .forms import LoginForm
+from .forms import LoginForm, ThreadForm
 
-def check_login(request):
-    if request.session.get('user_id') is not None:
-        return True
-    return False
 
 def login(request):
     if request.POST:
@@ -18,8 +15,7 @@ def login(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             request.session['user_id'] = user.id
-        else:
-            return redirect('forum-home')
+    return redirect('forum-home')
 
 def logout_view(request):
     logout(request)
@@ -41,16 +37,18 @@ def home(request):
         # Get subforum request
         sub = request.GET.get('sub')
         if sub:
+            # Load posts of subforum
             try: 
                 subforum = Subforum.objects.get(id=sub) 
                 context['subforum'] = subforum.__dict__
                 threads = subforum.thread_set.all()
                 context['threads'] = threads
-                print(context['threads'])
+                context['threadform'] = ThreadForm()
                 return render(request, 'forum/home.html', context)
             except ObjectDoesNotExist:
                 return redirect('forum-home')
         else:
+            # Load subforums
             context['subforums'] = {}
             for subforum in Subforum.objects.all():
                 try:
@@ -96,7 +94,28 @@ def thread(request):
         'id': request.session.get('user_id')
     }
         
-    return render(request, 'forum/thread.html', context)
+    return render(request, 'forum/thread.html', context)    
+
+def new_thread(request):
+    if request.POST:
+        subforum = request.GET.get('sub')
+        thread = ThreadForm(request.POST)
+        if thread.is_valid():
+            thread.save(commit=False)
+            thread.author = User.objects.get(id=request.session['user_id'])
+            thread.subforum = Subforum.objects.get(id=subforum)
+            thread.save()
+            # Redirect to original sub
+            response = redirect('forum-home')
+            response['Location'] += '?sub=' + subforum 
+            return response
+    return redirect('forum-home')
+    
+
+def check_login(request):
+    if request.session.get('user_id') is not None:
+        return True
+    return False
 
 def add_error(request, error_type):
     try:
