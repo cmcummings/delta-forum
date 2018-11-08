@@ -10,7 +10,11 @@ class LoginForm(forms.ModelForm):
         fields = ['username', 'password']
 
 class ThreadForm(forms.ModelForm):
-
     class Meta:
         model = Thread
         fields = ['title', 'content']
+
+class ReplyForm(forms.ModelForm):
+    class Meta:
+        model = Reply
+        fields = ['content']

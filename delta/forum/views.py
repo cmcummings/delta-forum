@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from .models import Thread, Reply, Subforum
-from .forms import LoginForm, ThreadForm
+from .forms import LoginForm, ThreadForm, ReplyForm
 
 
 def login(request):
@@ -17,9 +17,11 @@ def login(request):
             request.session['user_id'] = user.id
     return redirect('forum-home')
 
+
 def logout_view(request):
     logout(request)
     return redirect('forum-home')
+
 
 def home(request):
     context = {}
@@ -58,6 +60,7 @@ def home(request):
                     context['subforums'][subforum.category][subforum.id] = subforum.__dict__
             return render(request, 'forum/home.html', context)
 
+
 def thread(request):
     if check_login(request) is False: 
         return redirect('forum-home')
@@ -74,6 +77,8 @@ def thread(request):
     # Check if thread requested exists
     try:
         thread = Thread.objects.get(id=thread_id)
+        # Load ReplyForm into context
+        context['replyform'] = ReplyForm()
         # Load thread into context if it exists
         context['thread'] = thread.__dict__
         # Load author into context 
@@ -87,7 +92,7 @@ def thread(request):
             context['thread']['replies'][reply.id]['author'] =  User.objects.get(id=context['thread']['replies'][reply.id]['author_id']).__dict__
     except ObjectDoesNotExist: 
         add_error(request, 'NoThreadFound')
-        return redirect('forum-home') # TODO redirect to home page with NoThreadFound error msg
+        return redirect('forum-home')
 
     # Get session stuff
     context['user'] = {
@@ -96,14 +101,15 @@ def thread(request):
         
     return render(request, 'forum/thread.html', context)    
 
+
 def new_thread(request):
     if request.POST:
         subforum = request.GET.get('sub')
         thread = ThreadForm(request.POST)
         if thread.is_valid():
-            thread.save(commit=False)
+            thread = thread.save(commit=False)
             thread.author = User.objects.get(id=request.session['user_id'])
-            thread.subforum = Subforum.objects.get(id=subforum)
+            thread.subforum = Subforum.objects.get(id=subforum) 
             thread.save()
             # Redirect to original sub
             response = redirect('forum-home')
@@ -111,11 +117,27 @@ def new_thread(request):
             return response
     return redirect('forum-home')
     
+def new_reply(request):
+    if request.POST:
+        thread = request.GET.get('id')
+        reply = ReplyForm(request.POST)
+        if reply.is_valid():
+            reply = reply.save(commit=False)
+            reply.author = User.objects.get(id=request.session['user_id'])
+            reply.thread = Thread.objects.get(id=thread)
+            reply.save()
+            # Redirect to original thread
+            response = redirect('forum-thread')
+            response['Location'] += '?id=' + thread
+            return response
+    return redirect('forum-home')
+
 
 def check_login(request):
     if request.session.get('user_id') is not None:
         return True
     return False
+
 
 def add_error(request, error_type):
     try:
@@ -142,4 +164,3 @@ def load_errors_context(request, context):
         request.session['errors'] = {}
     except KeyError:
         return
-

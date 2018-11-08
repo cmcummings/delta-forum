@@ -61,6 +61,28 @@
         </div>
     </div>
     {% endfor %}
+
+    <!-- Reply Form -->
+    <div class="bg-dark rounded m-5 p-3">
+        <form action="{% url 'forum-new-reply' %}?id={{ thread.id }}" method="POST">
+            {% csrf_token %}
+            <h2 class="border-bottom border-success text-success">Reply</h2>
+            <div class="form-group">
+                {{ replyform.content }}
+            </div>
+            <input style="" class="btn btn-success" type="submit" value="Post">
+        </form>
+        <script>
+            $("#id_title").attr("placeholder", "Title");
+            $("#id_content").attr("placeholder", "Content");
+            $('.form-group input').each(function () {
+                $(this).addClass('form-control bg-dark text-secondary border-secondary');
+            })
+            $('textarea').each(function () {
+                $(this).addClass('form-control bg-dark text-secondary border-secondary');
+            })
+        </script>
+    </div>
 </div>
 
 {% endblock %}  
