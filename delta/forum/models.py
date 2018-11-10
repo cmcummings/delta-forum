@@ -19,3 +19,19 @@ class Reply(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     date = models.DateTimeField(default=timezone.now)
+
+class UserTitle(models.Model):
+    COLORS = (
+        ("primary", "Orange"), 
+        ("secondary", "Grey"), 
+        ("success", "Green"), 
+        ("danger", "Pink"), 
+        ("warning", "Red"), 
+        ("info", "Blue"), 
+        ("light", "White"), 
+        ("dark", "Black")
+    )
+
+    color = models.CharField(max_length=10, choices=COLORS, default="secondary")
+    title = models.CharField(max_length=20)
+    users = models.ManyToManyField(to=User)

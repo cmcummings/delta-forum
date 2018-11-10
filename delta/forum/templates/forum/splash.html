@@ -56,6 +56,13 @@
                     </div>
                     <input class="float-right" type="submit" value="Log in">
                 </form>
+                <script>
+                    $("#id_username").attr("placeholder", "Username");
+                    $("#id_password").attr("placeholder", "Password");
+                    $('.form-group input').each(function () {
+                        $(this).addClass('form-control bg-dark text-secondary border-secondary');
+                    });
+                </script>
             </div>
         </div>
     </div>
