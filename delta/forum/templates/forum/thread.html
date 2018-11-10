@@ -20,14 +20,16 @@
                 <img class="" src="{% static 'img/delta.png' %}" width=128 height=128>
                 <div class="text-center">
                     <h5 class="pt-2">{{ thread.author.username }}</h5> <!-- text-primary if admin -->
-                    <!-- <div class="">
-                        <span class="badge badge-primary">Site Adminstrator</span><br>
-                        <span class="badge badge-light">God</span><br>
-                    </div>
                     <div class="">
-                        <small>Posts: <span class="text-light">1000</span></small><br>
-                        <small>Reputation: <span class="text-light">9001</span></small><br>
-                    </div> -->
+                        {% for title in thread.author.titles %}
+                        <span class="badge badge-{{ title.color }}">{{ title.title }}</span><br>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-1">
+                        {% for label, stat in thread.author.stats.items %}
+                        <small>{{ label }}: <span class="text-light">{{ stat }}</span></small><br>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
             <div class="media-body">
@@ -45,13 +47,16 @@
                 <img class="" src="{% static 'img/delta.png' %}" width=128 height=128>
                 <div class="text-center">
                     <h5 class="pt-2 text-secondary">{{ reply.author.username }}</h5>
-                    <!-- <div class="">
-                        <span class="badge badge-secondary">User</span><br>
-                    </div>
                     <div class="">
-                        <small>Posts: <span class="text-light">20</span></small><br>
-                        <small>Reputation: <span class="text-light">24</span></small><br>
-                    </div> -->
+                        {% for title in reply.author.titles %}
+                        <span class="badge badge-{{ title.color }}">{{ title.title }}</span><br>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-1">
+                        {% for label, stat in reply.author.stats.items %}
+                        <small>{{ label }}: <span class="text-light">{{ stat }}</span></small><br>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
             <div class="media-body">

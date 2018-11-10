@@ -79,17 +79,33 @@ def thread(request):
         thread = Thread.objects.get(id=thread_id)
         # Load ReplyForm into context
         context['replyform'] = ReplyForm()
+
         # Load thread into context if it exists
         context['thread'] = thread.__dict__
+
         # Load author into context 
-        context['thread']['author'] = User.objects.get(id=context['thread']['author_id']).__dict__
+        author = User.objects.get(id=context['thread']['author_id'])
+        context['thread']['author'] = author.__dict__
+        context['thread']['author']['titles'] = author.usertitle_set.all()
+        context['thread']['author']['stats'] = {
+            'Total Posts': author.thread_set.count()+author.reply_set.count()
+        }
+
         # Load replies into context
         context['thread']['replies'] = {}
+
         for reply in thread.reply_set.all():
             context['thread']['replies'][reply.id] = reply.__dict__
+
         # Load author into replies
         for reply in thread.reply_set.all():
-            context['thread']['replies'][reply.id]['author'] =  User.objects.get(id=context['thread']['replies'][reply.id]['author_id']).__dict__
+            replier = User.objects.get(id=context['thread']['replies'][reply.id]['author_id'])
+            context['thread']['replies'][reply.id]['author'] = replier.__dict__
+            context['thread']['replies'][reply.id]['author']['titles'] = replier.usertitle_set.all()
+            context['thread']['replies'][reply.id]['author']['stats'] = {
+                'Total Posts': replier.thread_set.count()+author.reply_set.count()
+            }
+
     except ObjectDoesNotExist: 
         add_error(request, 'NoThreadFound')
         return redirect('forum-home')
